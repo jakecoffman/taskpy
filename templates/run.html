@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Job {{name}}{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block nav_start %}{{ super() }}{% endblock %}
+{% block nav %}
+    <ul>
+        <li><a href="javascript:void(0)" onClick="history.go(-1);">Back</a></li>
+    </ul>
+{% endblock %}
+{% block nav_end %}{{ super() }}{% endblock %}
+{% block more_start %}{{ super() }}{% endblock %}
+{% block more %}
+    The run page is a record of the execution of all the tasks and 
+    associated items involved with the run of the job at the time it
+    was executed.
+{% endblock %}
+{% block more_end %}{{ super() }}{% endblock %}
+{% block content %}
+<div id="content">
+    <h2>{{job}} - Run #{{run}}</h2>
+    {% if tasks %}
+        <h3>Tasks</h3>
+        {% for t in tasks %}
+            <h4>{{t[0]}}</h4>
+            <pre>{{t[1]}}</pre>
+        {% endfor %}
+    {% endif %}
+    <h3>Output</h3>
+        <pre>{{output}}</pre>
+</div>
+{% endblock %}

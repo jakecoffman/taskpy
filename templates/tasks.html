@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Tasks{% endblock %}
+{% block more %}
+    <li class="nav-header">Actions</li>
+    <li><a href="javascript:void(0);" onclick="createNewItem('task');">Add new task</a></li>
+    <li class="nav-header">Help</li>
+    <li>Tasks are a single unit of work within a job. Think of tasks like methods
+    of a class. Each one takes input (or not), does some work, then produces
+    output (or not.) Tasks can pass these inputs and outputs along to eachother.
+    Tasks can also be set to execute only if previous steps were successful. 
+{% endblock %}
+{% block more_end %}{{ super() }}{% endblock %}
+{% block content %}
+<div id="content">
+    <h2>Tasks</h2>
+    <table id="tasks" class="table table-striped">
+    <tr>
+        <th>Task Name</th>
+        <th>Type</th>
+    </tr>
+    {% for t in tasks %}
+        <tr>
+            <td><a href="/tasks/{{t}}">{{t}}</a></td>
+            <td>Python</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endblock %}
