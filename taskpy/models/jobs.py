@@ -47,9 +47,12 @@ class JobsModel(object):
     
     # Wrap this function to update
     def update_job(self, form):
-        name = form['name']
-        if name not in self._data:
+        name = form.get('name')
+        job = self._data.get(name)
+        if not job:
             raise Exception("Can't update job, it doesn't exist!")
+        if 'task' in form:
+            job['Tasks'] = form.getlist('task')
         return name
     
     def delete_job(self, job):

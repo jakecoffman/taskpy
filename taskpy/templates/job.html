@@ -1,30 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Job {{name}}{% endblock %}
-{% block head %}
-{{ super() }}
+{% block tail %}
 <script type="text/javascript">
     // Global variable keeping track of how many inputs there are
     curInputs = 0;
-    $(document).ready(function () {
-        // Create arrays of choices 
-        var taskChoices=new Array();
-        {% for task in tasks -%}
-            taskChoices[{{loop.index0}}]="{{task}}";
-        {% endfor -%}
-        var triggerChoices=new Array();
-        {% for trig in triggers -%}
-            triggerChoices[{{loop.index0}}]="{{trig}}";
-        {% endfor -%}
-        {% for trigger in job.Triggers -%}
-        selindex = triggerChoices.indexOf('{{trigger}}');
+    // Create arrays of choices
+    document.taskChoices = {{ tasks|tojson|safe }};
+    document.triggerChoices = {{ triggers|tojson|safe }};
+    {% for trigger in job.Triggers -%}
+        selindex = document.triggerChoices.indexOf('{{trigger}}');
         addInput('triggers', 'trigger', triggerChoices, selindex);
-        {% endfor -%}
-        // Select the items that need to be selected
-        {% for task in job.Tasks -%}
-        selindex = taskChoices.indexOf('{{task}}');
-        addInput('tasks', 'task', taskChoices, selindex);
-        {% endfor -%}
-    });
+    {% endfor -%}
+    // Select the items that need to be selected
+    {% for task in job.Tasks -%}
+        selindex = document.taskChoices.indexOf('{{task}}');
+        addInput('tasks', 'task', document.taskChoices, selindex);
+    {% endfor -%}
 </script>
 {% endblock %}
 {% block more %}
@@ -54,14 +45,14 @@
 <div id="content">
     <h2>Job: {{name}}</h2>
     <p>To edit the job, change the info below.</p>
-    <form id="jobInfo" action='javascript:void(0)'>
+    <form id="jobInfo" action="javascript:void(0)">
         <p>Job name: <input type="text" name="name" value="{{name}}"/></p>
         <h3>Triggers</h3>
         <p><div id="triggers"></div>
         <p><input type="button" class="btn" value="Add trigger" onclick="addInput('triggers', 'trigger', triggerChoices);"/></p>
         <h3>Tasks</h3>
-        <p><div id="tasks"></div>
-        <p><input type="button" class="btn" id="AddTask" value="Add task" onclick="addInput('tasks', 'task', taskChoices);" /></p>
+        <p><div id="tasks"></div></p>
+        <p><input type="button" class="btn" id="AddTask" value="Add task" onclick="addInput('tasks', 'task', document.taskChoices);" /></p>
         <p><input type="submit" class="btn btn-primary" value="Update" onclick="putUrlForm('/jobs/{{name}}', 'jobInfo')" /></p>
     </form>
     <h3>Permalinks</h3>
