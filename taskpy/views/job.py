@@ -1,16 +1,12 @@
 import flask
 import flask.views
 
-from taskpy.models import jobs, tasks
-
 class Job(flask.views.MethodView):
-    jobs = jobs.JobsModel()
-    tasks = tasks.TasksModel()
 
     def get(self, job):
-        if job not in self.jobs.get():
+        if job not in flask.g.jobs.get():
             flask.abort(404)
-        return flask.render_template('job.html', name=job, job=self.jobs.get(job), tasks=self.tasks.get())
+        return flask.render_template('job.html', name=job, job=flask.g.jobs.get(job), tasks=flask.g.tasks.get())
 
     def delete(self, job):
         return "Delete job", job

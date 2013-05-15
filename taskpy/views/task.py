@@ -1,25 +1,20 @@
 import flask
 from flask.views import MethodView
 
-import taskpy.models.tasks
-import taskpy.models.jobs
-
 class Task(MethodView):
-    tasks = taskpy.models.tasks.TasksModel()
-    jobs = taskpy.models.jobs.JobsModel()
     decorators = []
 
     # Get one task
     def get(self, task=None):
-        if task not in self.tasks.get():
+        if task not in flask.g.tasks.get():
             flask.abort(404)
         included = []
-        jobs = self.jobs.get()
+        jobs = flask.g.jobs.get()
         for job in jobs:
-            if task in jobs[job]['Tasks']:
+            if task in jobs[job].get('Tasks', []):
                 included.append(job)
         included.sort()
-        return flask.render_template('task.html', task=task, included=included, script=self.tasks.load_task(task))
+        return flask.render_template('task.html', task=task, included=included, script=flask.g.tasks.load_task(task))
 
     # Delete this task
     def delete(self, task=None):
@@ -29,13 +24,12 @@ class Task(MethodView):
 
     # Update this task
     def put(self, task=None):
-        print flask.request.mimetype
         if task is None:
             flask.abort(405) # Not allowed
         form = flask.request.form
         # This may be a rename operation if it's not in the list
-        if form['name'] in self.tasks.get():
-            self.tasks.save_task(form['name'], form['script'])
+        if form['name'] in flask.g.tasks.get():
+            flask.g.tasks.save_task(form['name'], form['script'])
         else:
             raise NotImplementedError()
         return '/tasks/'

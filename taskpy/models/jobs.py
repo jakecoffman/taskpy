@@ -4,11 +4,8 @@ import shutil
 import time
 
 import taskpy.models.tasks as task_list
-import taskpy.utils
 
-Singleton = taskpy.utils.singleton_factory()
-
-class JobsModel(Singleton):
+class JobsModel(object):
     def __init__(self):
         self._data = dict()
         self.load()
