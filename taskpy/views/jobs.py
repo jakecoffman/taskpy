@@ -1,7 +1,7 @@
 import flask
 import flask.views
 
-from models import jobs, tasks
+from taskpy.models import jobs, tasks
 
 class Jobs(flask.views.MethodView):
     jobs = jobs.JobsModel()

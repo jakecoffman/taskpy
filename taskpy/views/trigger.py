@@ -1,7 +1,7 @@
 import flask
 from flask.views import MethodView
 
-import models.triggers as trigger_list
+import taskpy.models.triggers as trigger_list
 
 class Trigger(MethodView):
     # Get one trigger

@@ -1,15 +1,16 @@
 import os
 import subprocess
-import models.jobs
-import utils
 
-Singleton = utils.singleton_factory()
+import taskpy.models.jobs
+import taskpy.utils
+
+Singleton = taskpy.utils.singleton_factory()
 
 class TasksModel(Singleton):
     def __init__(self):
         self._data = list()
         self.load()
-        self.jobs = models.jobs.JobsModel()
+        self.jobs = taskpy.models.jobs.JobsModel()
 
     def get(self):
         return self._data

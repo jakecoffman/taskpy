@@ -2,10 +2,11 @@ import json
 import os
 import shutil
 import time
-import models.tasks as task_list
-import utils
 
-Singleton = utils.singleton_factory()
+import taskpy.models.tasks as task_list
+import taskpy.utils
+
+Singleton = taskpy.utils.singleton_factory()
 
 class JobsModel(Singleton):
     def __init__(self):

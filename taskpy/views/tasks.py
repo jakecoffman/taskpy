@@ -1,12 +1,12 @@
 import flask
 from flask.views import MethodView
 
-import models.tasks
-import models.jobs
+import taskpy.models.tasks
+import taskpy.models.jobs
 
 class Tasks(MethodView):
-    tasks = models.tasks.TasksModel()
-    jobs = models.jobs.JobsModel()
+    tasks = taskpy.models.tasks.TasksModel()
+    jobs = taskpy.models.jobs.JobsModel()
     decorators = []
 
     # Get list of tasks, or get one task
