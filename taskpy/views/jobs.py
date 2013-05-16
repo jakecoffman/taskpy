@@ -74,4 +74,4 @@ class JobsView(BaseModelView):
 	@admin.expose('/job/<id>')
 	def job_view(self, id):
 		job = self.get_one(id)
-		return self.render('job.html')
+		return self.render('job.html', name=id, job=flask.g.jobs.get(id), tasks=flask.g.tasks.get(), triggers=[])

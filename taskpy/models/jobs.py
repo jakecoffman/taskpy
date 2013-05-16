@@ -2,11 +2,12 @@ import json
 import os
 import shutil
 import time
+import glob
 
 import taskpy.models.tasks as task_list
 
 class Configuration(object):
-	def __init__(self, base_dir):
+	def __init__(self, base_dir = '.'):
 		self.base_dir = base_dir
 		self.jobs = {}
 		self.tasks = {}
