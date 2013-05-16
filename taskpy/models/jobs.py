@@ -5,6 +5,44 @@ import time
 
 import taskpy.models.tasks as task_list
 
+class Configuration(object):
+	def __init__(self, base_dir):
+		self.base_dir = base_dir
+		self.jobs = {}
+		self.tasks = {}
+		self.load()
+	def load(self):
+		with open('jobs.json', 'r') as fle:
+			jobs_data = json.load(fle)
+		for name, data in jobs_data.iteritems():
+			self.jobs[name] = Job( name=name
+								 , data=data
+								 , configuration=self
+								 )
+	def save(self):
+		jobs_data = {job.name: job.as_json() for _, job in self.jobs.items()}
+		with open('jobs.json', 'w') as fle:
+			json.dump(jobs_data, fle)
+	def add(self, object):
+		self.jobs[object.name] = object
+
+class Job(object):
+	def __init__(self, name, data={}, configuration=None):
+		self.name = name
+		self.tasks = data.get('tasks', [])
+		self.runs = data.get('runs', [])
+		self.configuration = configuration
+	def as_json(self):
+		return  { 'name': self.name
+				, 'tasks': self.tasks
+				}
+	@property
+	def status(self):
+		return None
+	@property
+	def last_run(self):
+		return None
+
 class JobsModel(object):
     def __init__(self):
         self._data = dict()
