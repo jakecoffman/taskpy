@@ -1,4 +1,5 @@
 import flask
+from flask.ext import admin
 
 import taskpy.views
 import taskpy.models.jobs
@@ -6,11 +7,13 @@ import taskpy.models.tasks
 
 def make_app():
 	app = flask.Flask(__name__)
+	app.secret_key = 'taskpy123'
 	
-	jobs = taskpy.views.Jobs.as_view('jobs')
-	app.add_url_rule("/", view_func=jobs)
-	app.add_url_rule('/jobs', view_func=jobs)
-	app.add_url_rule('/jobs/', view_func=jobs)
+	index_view = taskpy.views.JobsView(name="Jobs", endpoint="jobs", url='/')
+	admin_app = admin.Admin(app, name='Taskpy', index_view=index_view, base_template='admin_base.html')
+
+	# Static bootstrap files (required by flask-admin)
+	admin_app.add_view(taskpy.views.AdminStatic(url='/_'))
 
 	job = taskpy.views.Job.as_view('job')
 	app.add_url_rule('/jobs/<job>', view_func=job)
@@ -32,11 +35,13 @@ def make_app():
 
 	jobs_model = taskpy.models.jobs.JobsModel()
 	tasks_model = taskpy.models.tasks.TasksModel()
+	configuration = taskpy.models.jobs.Configuration('.')
 
 	@app.before_request
 	def before_request():
 		flask.g.jobs = jobs_model
 		flask.g.tasks = tasks_model
+		flask.g.configuration = configuration
 
 	return app
 
