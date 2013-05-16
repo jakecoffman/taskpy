@@ -18,7 +18,8 @@ setup(
 				  ]
 		}
 	, install_requires =
-		[ 'flask>=0.9'
+		[ 'flask'
+		, 'flask-admin'
 		]
 
 	 , entry_points =
