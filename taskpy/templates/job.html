@@ -1,52 +1,37 @@
-{% extends "base.html" %}
-{% block title %}Job {{name}}{% endblock %}
-{% block tail %}
-<script type="text/javascript">
-    // Global variable keeping track of how many inputs there are
-    curInputs = 0;
-    // Create arrays of choices
-    document.taskChoices = {{ tasks|tojson|safe }};
-    document.triggerChoices = {{ triggers|tojson|safe }};
-    {% for trigger in job.Triggers -%}
-        selindex = document.triggerChoices.indexOf('{{trigger}}');
-        addInput('triggers', 'trigger', triggerChoices, selindex);
-    {% endfor -%}
-    // Select the items that need to be selected
-    {% for task in job.Tasks -%}
-        selindex = document.taskChoices.indexOf('{{task}}');
-        addInput('tasks', 'task', document.taskChoices, selindex);
-    {% endfor -%}
-</script>
-{% endblock %}
-{% block more %}
-        <li class="nav-header">Actions</li>
-        <li><a href="/jobs">Back</a></li>
-        <li><a href="javascript:void(0)" onclick="addRun('/jobs/{{name}}');">Run job</a></li>
-        <li><a href="javascript:void(0)" onclick="deleteJob('/jobs/{{name}}');">Delete job</a></li>
-{% if runs != None %}
-    <li class="nav-header">Runs</li>
-    <ul id="runs">
-    {% for run in job.Runs|reverse -%}
-        <li><a href="/jobs/{{name}}/{{loop.length - loop.index0}}">
-        {% if run[1] == "success" %}
-        <img width="10px" height="10px" src="/static/check.png" /> #{{loop.length - loop.index0}} - {{ run[0][4:8] }}
-        {% elif run[1] == "fail" %}
-        <img width="10px" height="10px" src="/static/x.png" /> #{{loop.length - loop.index0}} - {{ run[0][4:8] }}
-        {% else %}
-        <img width="10px" height="10px" src="/static/qmark.png" /> #{{loop.length - loop.index0}} - {{ run[0][4:8] }}
-        {% endif %}
-        </a></li>
-    {% endfor -%}
-    </ul>
-{% endif %}
-{% endblock %}
-{% block more_end %}{{ super() }}{% endblock %}
-{% block content %}
-<div id="content">
-    <h2>Job: {{name}}</h2>
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="span2 well">
+	<li class="nav-header">Actions</li>
+		<li><a href="{{ url_for('.index_view') }}">Back</a></li>
+		<li><a href="#">Run job</a></li>
+		<li>
+		<form class="icon" method="POST" action="{{ url_for('.delete_view', id=job.name, url=return_url) }}">
+			<button onclick="return confirm('You sure you want to delete this job?');">
+				<a>Delete Job</a>
+			</button>
+		</form>
+		</li>
+	<li class="nav-header">Runs</li>
+	<ul id="runs">
+	{% for run in job_old.Runs|reverse -%}
+		<li><a href="/jobs/{{name}}/{{loop.length - loop.index0}}">
+		{% if run[1] == "success" %}
+		<span class="label label-success">Pass</span>
+		{% elif run[1] == "fail" %}
+		<span class="label label-important">Fail</span>
+		{% else %}
+		<span class="label">Unknown</span>
+		{% endif %}
+		#{{loop.length - loop.index0}} - {{ run[0][4:8] }}
+		</a></li>
+	{% endfor -%}
+	</ul>
+</div>
+<div class="span9" id="content">
+    <h2>Job: {{job.name}}</h2>
     <p>To edit the job, change the info below.</p>
     <form id="jobInfo" action="javascript:void(0)">
-        <p>Job name: <input type="text" name="name" value="{{name}}"/></p>
+        <p>Job name: <input type="text" name="name" value="{{job.name}}"/></p>
         <h3>Triggers</h3>
         <p><div id="triggers"></div>
         <p><input type="button" class="btn" value="Add trigger" onclick="addInput('triggers', 'trigger', triggerChoices);"/></p>
@@ -55,9 +40,24 @@
         <p><input type="button" class="btn" id="AddTask" value="Add task" onclick="addInput('tasks', 'task', document.taskChoices);" /></p>
         <p><input type="submit" class="btn btn-primary" value="Update" onclick="putUrlForm('/jobs/{{name}}', 'jobInfo')" /></p>
     </form>
-    <h3>Permalinks</h3>
-    <ul id="permalinks">
-    <li><a href="/jobs/{{name}}/-1">Last run of job {{name}}</a></li>
-    <li><a href="/jobs/{{name}}/-2">Last successful run of job {{name}}</a></li></ul>
 </div>
+{% endblock %}
+
+{% block tail %}
+<script type="text/javascript">
+    // Global variable keeping track of how many inputs there are
+    curInputs = 0;
+    // Create arrays of choices
+    document.taskChoices = {{ tasks|tojson|safe }};
+    document.triggerChoices = {{ triggers|tojson|safe }};
+    {% for trigger in job_old.Triggers -%}
+        selindex = document.triggerChoices.indexOf('{{trigger}}');
+        addInput('triggers', 'trigger', triggerChoices, selindex);
+    {% endfor -%}
+    // Select the items that need to be selected
+    {% for task in job_old.Tasks -%}
+        selindex = document.taskChoices.indexOf('{{task}}');
+        addInput('tasks', 'task', document.taskChoices, selindex);
+    {% endfor -%}
+</script>
 {% endblock %}
