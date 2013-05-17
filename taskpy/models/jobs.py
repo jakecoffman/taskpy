@@ -10,7 +10,6 @@ class Configuration(object):
 	def __init__(self, base_dir = '.'):
 		self.base_dir = base_dir
 		self.jobs = {}
-		self.tasks = {}
 		self.load()
 	def load(self):
 		with open('jobs.json', 'r') as fle:
@@ -24,8 +23,10 @@ class Configuration(object):
 		jobs_data = {job.name: job.as_json() for _, job in self.jobs.items()}
 		with open('jobs.json', 'w') as fle:
 			json.dump(jobs_data, fle)
-	def add(self, object):
-		self.jobs[object.name] = object
+	def add(self, obj):
+		self.jobs[obj.name] = obj
+	def remove(self, obj):
+		self.jobs.pop(obj.name)
 
 class Job(object):
 	def __init__(self, name, data={}, configuration=None):

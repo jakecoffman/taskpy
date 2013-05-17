@@ -11,11 +11,11 @@ def format_status(context, model, field):
 	'''Format status field to have an icon'''
 	status = getattr(model, field)
 	if not status:
-		return Markup('<span class="label label"><i class="icon-star-empty icon-white"></i> New</span>')
+		return Markup('<span class="label"><i class="icon-star-empty icon-white"></i> New</span>')
 	elif status == "success":
 		return Markup('<span class="label label-info"><i class="icon-thumbs-up icon-white"></i> Success</span>')
 	else:
-		return Markup('<span class="label label label-important"><i class="icon-thumbs-down icon-white"></i> Failing</span>')
+		return Markup('<span class="label label-important"><i class="icon-thumbs-down icon-white"></i> Failing</span>')
 
 def format_name(context, model, field):
 	'''Format job name as a link to the view page for that id'''
@@ -25,13 +25,15 @@ def format_name(context, model, field):
 class JobsForm(wtf.Form):
 	'''Form for uploading an eventmap'''
 	name = wtf.StringField(
-	      validators = [wtf.DataRequired()]
+		  validators = [wtf.DataRequired()]
 		)
 
 class JobsView(BaseModelView):
 	column_formatters = dict(status=format_status, name=format_name)
 	column_labels = dict(name='Job Name')
 	column_sortable_list = ['name', 'status', 'last_run']
+
+	list_template='jobs.html'
 
 	def __init__(self, **options):
 		super(JobsView, self).__init__(taskpy.models.jobs.Job, **options)
@@ -64,6 +66,16 @@ class JobsView(BaseModelView):
 		try:
 			job = taskpy.models.jobs.Job(name=name)
 			flask.g.configuration.add(job)
+			flask.g.configuration.save()
+			return True
+		except Exception, ex:
+			raise
+			flask.flash('Failed create. {}: {}'.format(ex.__class__.__name__, str(ex)), category='error')
+			return False
+
+	def delete_model(self, model):
+		try:
+			flask.g.configuration.remove(model)
 			flask.g.configuration.save()
 			return True
 		except Exception, ex:
