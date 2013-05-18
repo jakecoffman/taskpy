@@ -7,24 +7,28 @@ import glob
 import taskpy.models.tasks as task_list
 
 class Configuration(object):
-	def __init__(self, base_dir = '.'):
+	def __init__(self, base_dir='data'):
 		self.base_dir = base_dir
 		self.jobs = {}
 		self.load()
+
 	def load(self):
-		with open('jobs.json', 'r') as fle:
+		with open(os.path.join(self.base_dir, 'jobs.json'), 'r') as fle:
 			jobs_data = json.load(fle)
 		for name, data in jobs_data.iteritems():
 			self.jobs[name] = Job( name=name
 								 , data=data
 								 , configuration=self
 								 )
+
 	def save(self):
 		jobs_data = {job.name: job.as_json() for _, job in self.jobs.items()}
-		with open('jobs.json', 'w') as fle:
+		with open(os.path.join(self.base_dir, 'jobs.json'), 'w') as fle:
 			json.dump(jobs_data, fle)
+
 	def add(self, obj):
 		self.jobs[obj.name] = obj
+
 	def remove(self, obj):
 		self.jobs.pop(obj.name)
 
@@ -34,13 +38,17 @@ class Job(object):
 		self.tasks = data.get('tasks', [])
 		self.runs = data.get('runs', [])
 		self.configuration = configuration
+
 	def as_json(self):
 		return  { 'name': self.name
 				, 'tasks': self.tasks
+				, 'runs': self.runs
 				}
+
 	@property
 	def status(self):
 		return None
+
 	@property
 	def last_run(self):
 		return None
@@ -60,7 +68,7 @@ class JobsModel(object):
             return None
 
     def save(self):
-        open('jobs.json', 'w').write(json.dumps(self._data))
+        open('data/jobs.json', 'w').write(json.dumps(self._data))
     
     def load(self):
         if not os.path.isdir('data'):
@@ -70,7 +78,7 @@ class JobsModel(object):
         if not os.path.isdir('data/tasks'):
             os.mkdir('data/tasks')
         try:
-            self._data = json.loads(open('jobs.json').read())
+            self._data = json.loads(open('data/jobs.json').read())
         except:
             self._data = dict()
             self.save()
@@ -82,7 +90,7 @@ class JobsModel(object):
         if os.path.isdir(folder):
             os.remove(folder)
         os.mkdir(folder)
-        self._data[name] = {"Runs": []}
+        self._data[name] = {"runs": []}
         self.save()
     
     # Wrap this function to update
@@ -92,7 +100,7 @@ class JobsModel(object):
         if not job:
             raise Exception("Can't update job, it doesn't exist!")
         if 'task' in form:
-            job['Tasks'] = form.getlist('task')
+            job['tasks'] = form.getlist('task')
         return name
     
     def delete_job(self, job):
@@ -109,13 +117,13 @@ class JobsModel(object):
     def run_job(self, name):
         job = self._data[name]
         run = time.strftime('%Y%m%d%H%M%S')
-        tasks = job['Tasks']
+        tasks = job['tasks']
         folder = 'data/jobs/{0}/{1}'.format(name, run)
         if os.path.isdir(folder):
             # user clicked too fast
             return
-        job['Runs'].append([run, 'running'])
-        this_run = job['Runs'][-1]
+        job['runs'].append([run, 'running'])
+        this_run = job['runs'][-1]
         self.save()
         os.mkdir(folder)
         log = open(folder+'/log.txt', 'w')
@@ -135,8 +143,8 @@ class JobsModel(object):
         log.close()
         output = open(folder+'/log.txt').read()
         # Render the template to freeze it in time
-        run = len(self._data[name]['Runs'])
-        tasks = self._data[name]['Tasks']
+        run = len(self._data[name]['runs'])
+        tasks = self._data[name]['tasks']
         contents = []
         for task in tasks:
             contents.append(task_list.load_task(task))
@@ -145,7 +153,7 @@ class JobsModel(object):
 
     def save_run(self, name, js):
         job = self._data[name]
-        run = job['Runs'][-1][0]
+        run = job['runs'][-1][0]
         folder = 'data/jobs/{0}/{1}'.format(name, run)
         f = open(folder + '/run.json', 'w')
         f.write(json.dumps(js))
@@ -154,7 +162,7 @@ class JobsModel(object):
         run = int(run)
         job = self._data[name]
         if run < -1:
-            runs = job['Runs']
+            runs = job['runs']
             for i, r in enumerate(reversed(runs)):
                 print i, r
                 if r[1] == "success":
@@ -164,11 +172,11 @@ class JobsModel(object):
             pass
         else:
             run -= 1
-        run = job['Runs'][run][0]
+        run = job['runs'][run][0]
         folder = 'data/jobs/{0}/{1}'.format(name, run)
         f = open(folder + '/run.html')
         return f.read()
 
     def get_run_args(self, job, run):
-        run = self._data[job]['Runs'][int(run)-1][0]
+        run = self._data[job]['runs'][int(run)-1][0]
         return json.loads(open('data/jobs/{0}/{1}/run.json'.format(job, run)).read())
