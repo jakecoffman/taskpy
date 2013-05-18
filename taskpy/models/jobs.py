@@ -3,6 +3,7 @@ import os
 import shutil
 import time
 import glob
+import flask
 
 import taskpy.models.tasks as task_list
 
@@ -52,6 +53,36 @@ class Job(object):
 	@property
 	def last_run(self):
 		return None
+
+	@property
+	def folder(self):
+		return os.path.join(self.configuration.base_dir, 'jobs', self.name)
+
+	def run(self):
+		run_time = time.strftime('%Y%m%d%H%M%S')
+		folder = os.path.join(self.folder, run_time)
+		if os.path.isdir(folder):
+			# user clicked too fast
+			return
+		this_run = [run_time, 'running']
+		self.runs.append(this_run)
+		self.configuration.save()
+		os.makedirs(folder)
+		log = open(os.path.join(folder, 'log.txt'), 'w')
+		for task in self.tasks:
+			log.write("Starting task: {0}\n".format(task))
+			log.write("Task started at {0}\n".format(time.strftime('%d/%m/%Y %I:%M:%S %p')))
+			ret = flask.g.tasks.run_task(task, log)
+			log.write("Task ended at {0}\n".format(time.strftime('%d/%m/%Y %I:%M:%S %p')))
+			if ret != 0:
+				this_run[1] = 'fail'
+				log.write("Task failed, quitting")
+				break
+		if this_run[1] == 'running':
+			this_run[1] = 'success'
+		log.write("Job completed successfully")
+		self.configuration.save()
+		log.close()
 
 class JobsModel(object):
     def __init__(self):

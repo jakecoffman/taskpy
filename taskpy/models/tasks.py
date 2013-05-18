@@ -39,7 +39,7 @@ class TasksModel(object):
     
     # Todo, make thread pool run this
     def run_task(self, script, log):
-        p = subprocess.Popen('python "data/tasks/{0}.py"'.format(script), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen(['python','data/tasks/{0}.py'.format(script)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         log.write(p.communicate()[0])
         return p.returncode
     
