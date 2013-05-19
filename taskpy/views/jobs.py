@@ -1,9 +1,9 @@
+import cgi
 import flask
 import operator
 from jinja2 import Markup
 from flask.ext import admin, wtf
 from flask.ext.admin.model import BaseModelView
-import cgi
 
 import taskpy.models.jobs
 
@@ -25,7 +25,7 @@ def format_name(context, model, field):
 class JobsNewForm(wtf.Form):
 	'''Form for creating a new job'''
 	name = wtf.StringField(
-		  validators = [wtf.DataRequired()]
+		  validators = [wtf.DataRequired(), wtf.Regexp('^[a-zA-Z0-9_\-]*$')]
 		)
 	def validate_name(self, field):
 		if field.data in flask.g.configuration.jobs:
@@ -34,10 +34,10 @@ class JobsNewForm(wtf.Form):
 class JobEditForm(wtf.Form):
 	'''Form for editing a job'''
 	name = wtf.StringField(
-		  validators = [wtf.DataRequired()]
+		  validators = [wtf.DataRequired(), wtf.Regexp('^[a-zA-Z0-9_\-]*$')]
 		)
 	tasks = wtf.FieldList(
-		  wtf.SelectField('Task', choices=[('thing','thing'), ('git_scm', 'git_scm')])
+		  wtf.SelectField('Task', choices=[('hello_world','hello_world'), ('git_scm', 'git_scm')])
 		, min_entries=1
 		)
 	def validate_name(self, field):
@@ -65,11 +65,9 @@ class JobsView(BaseModelView):
 
 	def scaffold_form(self):
 		return JobsNewForm
+
 	def edit_form(self, obj):
 		form = JobEditForm(obj=obj)
-		form.tasks.choices = flask.g.tasks.get()
-		for task in obj.tasks:
-			form.tasks.append_entry(task)
 		return form
 
 	def get_one(self, name):
@@ -89,8 +87,8 @@ class JobsView(BaseModelView):
 		name = form.name.data
 
 		try:
-			job = taskpy.models.jobs.Job(name=name)
-			flask.g.configuration.add(job)
+			model = taskpy.models.jobs.Job(name=name, configuration=flask.g.configuration)
+			flask.g.configuration.add(model)
 			flask.g.configuration.save()
 			return True
 		except Exception, ex:
@@ -117,7 +115,7 @@ class JobsView(BaseModelView):
 				flask.flash('Renamed job to {}.'.format(model.name))
 
 			# Handle tasks
-			model.tasks = form.tasks.data
+			model.update_tasks(form.tasks.data)
 
 			flask.g.configuration.add(model)
 			flask.g.configuration.save()

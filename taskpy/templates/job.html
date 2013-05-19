@@ -20,14 +20,14 @@
 	<ul id="runs">
 	{% for run in job.runs|reverse -%}
 		<li><a href="/jobs/{{name}}/{{loop.length - loop.index0}}">
-		{% if run[1] == "success" %}
+		{% if run.state == "success" %}
 		<span class="label label-success">Pass</span>
-		{% elif run[1] == "fail" %}
+		{% elif run.state == "failed" %}
 		<span class="label label-important">Fail</span>
 		{% else %}
 		<span class="label">Unknown</span>
 		{% endif %}
-		#{{loop.length - loop.index0}} - {{ run[0][4:8] }}
+		#{{loop.length - loop.index0}} - {{ run.start_time.strftime('%Y%m%d') }}
 		</a></li>
 	{% endfor -%}
 	</ul>
@@ -40,7 +40,7 @@
 	<h3>Tasks</h3>
 	<ul>
 		{% for task in job.tasks -%}
-		<li>{{ task }}</li>
+		<li>{{ task.name }}</li>
 		{% endfor -%}
 	</ul>
 </div>

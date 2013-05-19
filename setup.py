@@ -20,6 +20,7 @@ setup(
 	, install_requires =
 		[ 'flask'
 		, 'flask-admin'
+		, 'iso8601'
 		]
 
 	 , entry_points =
