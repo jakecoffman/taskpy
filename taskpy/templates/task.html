@@ -1,23 +1,16 @@
-{% extends "base.html" %}
-{% block title %}{{task}}{% endblock %}
-{% block more %}
-    <li><a href="javascript:void(0);" onclick="deleteTask('{{task}}');">Delete Task</a></li>
-{% endblock %}
-{% block content %}
-<div id="content">
-<h2>Task: {{task}}</h2>
-<form id="taskForm" action='javascript:void(0)'>
-    <p>Task name: <br/><input type="text" name="name" value="{{task}}" />
-    <p>Script: <br><textarea name="script" rows="20" cols="40">{{script}}</textarea>
-    <p><input name="save" type="submit" value="Save" onclick="putUrlForm('/tasks/{{task}}', 'taskForm');">
-</form>
-{% if included != None and included|length > 0: %}
-    <h3>Task included in jobs:</h3>
-    <ul>
-    {% for job in included: %}
-        <li><a href="/jobs/{{job}}">{{job}}</a>
-    {% endfor %}
-    </ul>
-{% endif %}
-</div>
+{% extends 'admin/model/edit.html' %}
+{% block tail %}
+{{ super() }}
+<script src="//rawgithub.com/ajaxorg/ace-builds/master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var editor = ace.edit("script");
+	var editor_submit = document.getElementById("script_ace");
+	editor.session.setUseWorker(false);
+	editor.setTheme("ace/theme/monokai");
+	editor.getSession().setMode("ace/mode/python");
+	document.forms[0].onsubmit= function() {
+		editor_submit.value = editor.getSession().getValue();
+		return true;
+	};
+</script>
 {% endblock %}

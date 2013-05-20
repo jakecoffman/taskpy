@@ -4,6 +4,7 @@ import operator
 from flask.views import MethodView
 from flask.ext import admin, wtf
 from flask.ext.admin.model import BaseModelView
+from taskpy.widgets.ace import AceEditorField
 
 import taskpy.models.jobs
 
@@ -12,7 +13,7 @@ class TaskForm(wtf.Form):
 	name = wtf.StringField(
 		  validators = [wtf.DataRequired(), wtf.Regexp('^[a-zA-Z0-9_\-]*$')]
 		)
-	script = wtf.TextAreaField(
+	script = AceEditorField(
 		  validators = [wtf.DataRequired()]
 		)
 	def validate_name(self, field):
@@ -30,6 +31,8 @@ class TaskEditForm(TaskForm):
 class TasksView(BaseModelView):
 	column_labels = dict(name='Task Name')
 	column_sortable_list = ['name']
+
+	edit_template = 'task.html'
 
 	def __init__(self, **options):
 		super(TasksView, self).__init__(taskpy.models.jobs.Task, **options)
