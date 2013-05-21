@@ -1,6 +1,7 @@
 {% extends 'admin/base.html' %}
 {% block head_meta %}
 	{{ super() }}
+	<link rel="stylesheet" href="/static/site.css">
 	<!-- Fav and touch icons -->
 	<link rel="shortcut icon" href="/static/favicon.ico">
 {% endblock %}
@@ -22,17 +23,14 @@
       </div>
     </div>
 
-    {{ layout.messages() }}
-
-    <div class="container">
+    <div class="container" style="margin-top: 45px;">
+      {{ layout.messages() }}
       {% block body %}{% endblock %}
     </div>
     {% endblock %}
 
 {% block tail %}
-	<hr>
-
-	<footer>
+	<footer class="footer">
 		<p>
 			<a href="http://code.google.com/p/taskpy/">
 				http://code.google.com/p/taskpy/

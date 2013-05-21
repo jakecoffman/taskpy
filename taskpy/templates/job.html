@@ -1,6 +1,6 @@
 {% extends 'admin/master.html' %}
 {% block body %}
-<div class="span2 well">
+<div class="span2 well" id="sidebar">
 	<li class="nav-header">Actions</li>
 		<li><a href="{{ url_for('.index_view') }}">Back</a></li>
 		<li><a href="{{ url_for('.start_run_view', id=job.name) }}">Run job</a></li>
@@ -18,8 +18,9 @@
 		</li>
 	<li class="nav-header">Runs</li>
 	<ul id="runs">
-	{% for run in job.runs|reverse -%}
-		<li><a href="/jobs/{{name}}/{{loop.length - loop.index0}}">
+	{% for run in job.runs -%}
+		<li><a href="{{ url_for('.run_view', id=job.name, run_id=loop.index0) }}">
+		#{{loop.index0}} - {{ run.start_time.strftime('%m/%d %H:%M:%S') }}
 		{% if run.state == "success" %}
 		<span class="label label-success">Pass</span>
 		{% elif run.state == "failed" %}
@@ -27,7 +28,6 @@
 		{% else %}
 		<span class="label">Unknown</span>
 		{% endif %}
-		#{{loop.length - loop.index0}} - {{ run.start_time.strftime('%Y%m%d') }}
 		</a></li>
 	{% endfor -%}
 	</ul>

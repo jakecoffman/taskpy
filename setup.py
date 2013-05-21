@@ -19,7 +19,7 @@ setup(
 		}
 	, install_requires =
 		[ 'flask'
-		, 'flask-admin'
+		, 'flask-admin>=1.0.6'
 		, 'iso8601'
 		]
 
