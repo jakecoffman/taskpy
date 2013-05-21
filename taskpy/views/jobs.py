@@ -7,7 +7,7 @@ from flask.ext.admin.model import BaseModelView
 
 import taskpy.models.jobs
 
-def format_status(context, model, field):
+def format_status(view, context, model, field):
 	'''Format status field to have an icon'''
 	status = getattr(model, field)
 	if not status:
@@ -17,7 +17,7 @@ def format_status(context, model, field):
 	else:
 		return Markup('<span class="label label-important"><i class="icon-thumbs-down icon-white"></i> Failing</span>')
 
-def format_name(context, model, field):
+def format_name(view, context, model, field):
 	'''Format job name as a link to the view page for that id'''
 	url = flask.url_for('.job_view', id=getattr(model, field))
 	return Markup('<a href="{url}">{field_value}</a>'.format(field_value=cgi.escape(getattr(model, field)), url=url))

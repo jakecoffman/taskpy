@@ -5,3 +5,7 @@
 #sidebar ul {
 	margin-left: 0;
 }
+
+#sidebar li {
+	display: block;
+}
