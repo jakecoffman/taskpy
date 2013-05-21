@@ -16,6 +16,14 @@ class TaskForm(wtf.Form):
 		)
 	script = AceEditorField(
 		  validators = [wtf.DataRequired()]
+		, default='''#!/usr/bin/env python
+
+def main():
+	print 'Hello world!'
+
+if __name__ == '__main__':
+	main()
+'''
 		)
 	def validate_name(self, field):
 		if field.data in flask.g.configuration.tasks:
@@ -29,7 +37,7 @@ class TaskEditForm(TaskForm):
 			if field.data in flask.g.configuration.tasks:
 				raise wtf.ValidationError('That name already exists')
 
-def format_name(context, model, field):
+def format_name(view, context, model, field):
 	'''Format job name as a link to the view page for that id'''
 	url = flask.url_for('.edit_view', id=getattr(model, field))
 	return Markup('<a href="{url}">{field_value}</a>'.format(field_value=cgi.escape(getattr(model, field)), url=url))
