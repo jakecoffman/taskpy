@@ -137,6 +137,8 @@ class Run(object):
 				break
 		self.state = ('failed', 'success')[status]
 		self.end_time = datetime.datetime.utcnow()
+		log_file.write('Result: {0}\n'.format(self.state))
+		log_file.write('Job ended at {0}\n'.format(self.end_time.isoformat()))
 		self.job.configuration.save()
 
 	def as_json(self):
@@ -146,6 +148,11 @@ class Run(object):
 				, 'end_time': self.end_time.isoformat()
 				, 'state': self.state
 				}
+	@property
+	def output(self):
+		if not os.path.exists(self.log_filename):
+			return ''
+		return open(self.log_filename).read()
 
 class Task(object):
 	def __init__(self, name, configuration, data={}):

@@ -1,33 +1,31 @@
-{% extends "base.html" %}
-{% block title %}Job {{name}}{% endblock %}
-{% block head %}
-{{ super() }}
-{% endblock %}
-{% block nav_start %}{{ super() }}{% endblock %}
-{% block nav %}
-    <ul>
-        <li><a href="javascript:void(0)" onClick="history.go(-1);">Back</a></li>
-    </ul>
-{% endblock %}
-{% block nav_end %}{{ super() }}{% endblock %}
-{% block more_start %}{{ super() }}{% endblock %}
-{% block more %}
-    The run page is a record of the execution of all the tasks and 
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="span2 well" id="sidebar">
+	<li class="nav-header">Actions</li>
+		<li><a href="{{ url_for('.job_view', id=job.name) }}">Back</a></li>
+		<li><a href="{{ url_for('.start_run_view', id=job.name) }}">Run job</a></li>
+		<li>
+			<form class="icon" method="POST" action="{{ url_for('.delete_view', id=job.name, url=return_url) }}">
+				<button onclick="return confirm('You sure you want to delete this job?');">
+					<a>Delete Job</a>
+				</button>
+			</form>
+		</li>
+		<li>
+			<a class="icon" href="{{ url_for('.edit_view', id=job.name, url=return_url) }}">
+				Configure Job
+			</a>
+		</li>
+	<li class="nav-header">Runs</li>
+	<li>
+	The run page is a record of the execution of all the tasks and 
     associated items involved with the run of the job at the time it
     was executed.
-{% endblock %}
-{% block more_end %}{{ super() }}{% endblock %}
-{% block content %}
-<div id="content">
-    <h2>{{job}} - Run #{{run}}</h2>
-    {% if tasks %}
-        <h3>Tasks</h3>
-        {% for t in tasks %}
-            <h4>{{t[0]}}</h4>
-            <pre>{{t[1]}}</pre>
-        {% endfor %}
-    {% endif %}
-    <h3>Output</h3>
-        <pre>{{output}}</pre>
+	</li>
+</div>
+<div class="span9" id="content">
+	<h2>{{job.name}} - Run #{{run.start_time.isoformat()}}</h2>
+	<h3>Output</h3>
+	<pre>{{run.output}}</pre>
 </div>
 {% endblock %}

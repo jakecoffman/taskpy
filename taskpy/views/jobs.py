@@ -152,3 +152,14 @@ class JobsView(BaseModelView):
 			return flask.redirect(flask.url_for('.index_view'))
 		job.run()
 		return flask.redirect(flask.url_for('.job_view', id=id))
+
+	@admin.expose('/job/<id>/runs/<run_id>')
+	def run_view(self, id, run_id):
+		job = self.get_one(id)
+		if not job:
+			return flask.redirect(flask.url_for('.job_view', id=id))
+		if not 0 <= int(run_id) < len(job.runs):
+			return flask.redirect(flask.url_for('.job_view', id=id))
+		run = job.runs[int(run_id)]
+		here = flask.url_for('.run_view', id=id, run_id=run_id)
+		return self.render('run.html', run=run, job=job, return_url=here)
