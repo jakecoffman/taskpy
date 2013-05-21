@@ -75,7 +75,7 @@ class Job(object):
 	def __init__(self, name, configuration, data={}):
 		self.name = name
 		self.tasks = [configuration.tasks.get(x) for x in data.get('tasks', [])]
-		self.runs = [Run(self, x, configuration) for x in data.get('runs', [])]
+		self.runs = [Run(self, x) for x in data.get('runs', [])]
 		self.configuration = configuration
 
 	def as_json(self):
@@ -90,7 +90,7 @@ class Job(object):
 	@property
 	def status(self):
 		if self.runs:
-			return self.runs[-1].status
+			return self.runs[-1].state
 		return None
 
 	@property
@@ -137,12 +137,14 @@ class Run(object):
 				break
 		self.state = ('failed', 'success')[status]
 		self.end_time = datetime.datetime.utcnow()
+		self.job.configuration.save()
 
 	def as_json(self):
 		'''Serialize to dict for JSON storage'''
 		return  { 'log_filename': self.log_filename
 				, 'start_time': self.start_time.isoformat()
 				, 'end_time': self.end_time.isoformat()
+				, 'state': self.state
 				}
 
 class Task(object):

@@ -13,7 +13,7 @@ def format_status(context, model, field):
 	if not status:
 		return Markup('<span class="label"><i class="icon-star-empty icon-white"></i> New</span>')
 	elif status == "success":
-		return Markup('<span class="label label-info"><i class="icon-thumbs-up icon-white"></i> Success</span>')
+		return Markup('<span class="label label-success"><i class="icon-thumbs-up icon-white"></i> Success</span>')
 	else:
 		return Markup('<span class="label label-important"><i class="icon-thumbs-down icon-white"></i> Failing</span>')
 
@@ -27,6 +27,7 @@ class JobsNewForm(wtf.Form):
 	name = wtf.StringField(
 		  validators = [wtf.DataRequired(), wtf.Regexp('^[a-zA-Z0-9_\-]*$')]
 		)
+
 	def validate_name(self, field):
 		if field.data in flask.g.configuration.jobs:
 			raise wtf.ValidationError('That name already exists')
@@ -37,9 +38,14 @@ class JobEditForm(wtf.Form):
 		  validators = [wtf.DataRequired(), wtf.Regexp('^[a-zA-Z0-9_\-]*$')]
 		)
 	tasks = wtf.FieldList(
-		  wtf.SelectField('Task', choices=[('hello_world','hello_world'), ('git_scm', 'git_scm')])
+		  wtf.SelectField(
+			  'Task'
+			, choices=[]
+			, validators=[wtf.InputRequired()]
+			)
 		, min_entries=1
 		)
+
 	def validate_name(self, field):
 		# Dont allow duplicate names
 		# Only validate when changing name!
@@ -68,6 +74,12 @@ class JobsView(BaseModelView):
 
 	def edit_form(self, obj):
 		form = JobEditForm(obj=obj)
+
+		# Fill in the task choices in the select boxes
+		choices = [(x, x) for x in flask.g.configuration.tasks.keys()]
+		for selector in form.tasks.entries:
+			selector.choices = choices
+
 		return form
 
 	def get_one(self, name):
