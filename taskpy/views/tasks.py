@@ -1,8 +1,9 @@
 import cgi
 import flask
 import operator
-from flask.views import MethodView
+from jinja2 import Markup
 from flask.ext import admin, wtf
+from flask.views import MethodView
 from flask.ext.admin.model import BaseModelView
 from taskpy.widgets.ace import AceEditorField
 
@@ -28,7 +29,13 @@ class TaskEditForm(TaskForm):
 			if field.data in flask.g.configuration.tasks:
 				raise wtf.ValidationError('That name already exists')
 
+def format_name(context, model, field):
+	'''Format job name as a link to the view page for that id'''
+	url = flask.url_for('.edit_view', id=getattr(model, field))
+	return Markup('<a href="{url}">{field_value}</a>'.format(field_value=cgi.escape(getattr(model, field)), url=url))
+
 class TasksView(BaseModelView):
+	column_formatters = dict(name=format_name)
 	column_labels = dict(name='Task Name')
 	column_sortable_list = ['name']
 
