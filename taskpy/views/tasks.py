@@ -40,6 +40,7 @@ class TasksView(BaseModelView):
 	column_sortable_list = ['name']
 
 	edit_template = 'task.html'
+	create_template = 'task.html'
 
 	def __init__(self, **options):
 		super(TasksView, self).__init__(taskpy.models.jobs.Task, **options)
