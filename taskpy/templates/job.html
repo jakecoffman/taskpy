@@ -34,9 +34,7 @@
 </div>
 <div class="span9" id="content">
 	<h2>Job: {{job.name}}</h2>
-	<h3>Triggers</h3>
-	<p><div id="triggers"></div>
-	<p><input type="button" class="btn" value="Add trigger" onclick="addInput('triggers', 'trigger', triggerChoices);"/></p>
+	<p><a class="btn btn-primary" href="{{ url_for('.edit_view', id=job.name, url=return_url) }}">Configure</a></p>
 	<h3>Tasks</h3>
 	<ul>
 		{% for task in job.tasks -%}
