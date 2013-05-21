@@ -11,7 +11,7 @@ def make_app():
 	
 	index_view = taskpy.views.JobsView(name="Jobs", endpoint="jobs", url='/')
 	admin_app = admin.Admin(app, name='Taskpy', index_view=index_view, base_template='admin_base.html')
-	admin_app.add_view(taskpy.views.TasksView(endpoint="tasks"))
+	admin_app.add_view(taskpy.views.TasksView(name="Tasks", endpoint="tasks"))
 
 	# Static bootstrap files (required by flask-admin)
 	admin_app.add_view(taskpy.views.AdminStatic(url='/_'))
