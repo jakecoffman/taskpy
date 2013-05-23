@@ -22,6 +22,10 @@ def format_name(view, context, model, field):
 	url = flask.url_for('.job_view', id=getattr(model, field))
 	return Markup('<a href="{url}">{field_value}</a>'.format(field_value=cgi.escape(getattr(model, field)), url=url))
 
+def format_count(view, context, model, field):
+	'''Format the task count in a badge'''
+	return Markup('<div class="badge badge-inverse">%(field_value)s</div>') % {'field_value': len(getattr(model, field))}
+
 class JobsNewForm(wtf.Form):
 	'''Form for creating a new job'''
 	name = wtf.StringField(
@@ -54,11 +58,13 @@ class JobEditForm(wtf.Form):
 				raise wtf.ValidationError('That name already exists')
 
 class JobsView(BaseModelView):
-	column_formatters = dict(status=format_status, name=format_name)
+	column_formatters = dict(status=format_status, name=format_name, tasks=format_count)
 	column_labels = dict(name='Job Name')
 	column_sortable_list = ['name', 'status', 'last_run']
 
 	list_template='jobs.html'
+	edit_template='job_edit.html'
+	create_template='job_edit.html'
 
 	def __init__(self, **options):
 		super(JobsView, self).__init__(taskpy.models.jobs.Job, **options)
@@ -67,7 +73,7 @@ class JobsView(BaseModelView):
 		return model.name
 
 	def scaffold_list_columns(self):
-		return ('name', 'status', 'last_run')
+		return ('name', 'tasks', 'status', 'last_run')
 
 	def scaffold_form(self):
 		return JobsNewForm

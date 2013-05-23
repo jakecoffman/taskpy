@@ -1,4 +1,15 @@
 {% extends 'admin/model/edit.html' %}
+{% block body %}
+<ul class="breadcrumb">
+	<li><a href="{{ url_for('.index_view') }}">Tasks</a> <span class="divider">/</span></li>
+	{% if model %}
+	<li class="active">{{model.name}}</li>
+	{% else %}
+	<li class="active">Create</li>
+	{% endif %}
+</ul>
+{{ super() }}
+{% endblock %}
 {% block tail %}
 {{ super() }}
 <script src="//ace.ajax.org/build/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>

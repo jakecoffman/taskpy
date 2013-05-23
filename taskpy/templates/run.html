@@ -1,8 +1,12 @@
 {% extends 'admin/master.html' %}
 {% block body %}
+<ul class="breadcrumb">
+	<li><a href="{{ url_for('.index_view') }}">Jobs</a> <span class="divider">/</span></li>
+	<li><a href="{{ url_for('.job_view', id=job.name) }}">{{job.name}}</a> <span class="divider">/</span></li>
+	<li class="active">Run</li>
+</ul>
 <div class="span2 well" id="sidebar">
 	<li class="nav-header">Actions</li>
-		<li><a href="{{ url_for('.job_view', id=job.name) }}">Back</a></li>
 		<li><a href="{{ url_for('.start_run_view', id=job.name) }}">Run job</a></li>
 		<li>
 			<form class="icon" method="POST" action="{{ url_for('.delete_view', id=job.name, url=return_url) }}">

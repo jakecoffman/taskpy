@@ -1,0 +1,13 @@
+{% extends 'admin/model/edit.html' %}
+{% block body %}
+<ul class="breadcrumb">
+	<li><a href="{{ url_for('.index_view') }}">Jobs</a> <span class="divider">/</span></li>
+	{% if model %}
+	<li><a href="{{ url_for('.job_view', id=model.name) }}">{{model.name}}</a> <span class="divider">/</span></li>
+	<li class="active">Configure</li>
+	{% else %}
+	<li class="active">Create</li>
+	{% endif %}
+</ul>
+{{ super() }}
+{% endblock %}

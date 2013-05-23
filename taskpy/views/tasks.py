@@ -49,6 +49,7 @@ class TasksView(BaseModelView):
 
 	edit_template = 'task.html'
 	create_template = 'task.html'
+	list_template = 'tasks.html'
 
 	def __init__(self, **options):
 		super(TasksView, self).__init__(taskpy.models.jobs.Task, **options)
