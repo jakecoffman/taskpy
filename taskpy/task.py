@@ -2,8 +2,7 @@ import flask
 from flask.ext import admin
 
 import taskpy.views
-import taskpy.models.jobs
-import taskpy.models.tasks
+from taskpy.models.configuration import Configuration
 
 def make_app():
 	app = flask.Flask(__name__)
@@ -26,7 +25,7 @@ def make_app():
 	trigger = taskpy.views.Trigger.as_view('trigger')
 	app.add_url_rule('/triggers/<trigger>', view_func=trigger)
 
-	configuration = taskpy.models.jobs.Configuration('data')
+	configuration = Configuration('data')
 
 	@app.before_request
 	def before_request():

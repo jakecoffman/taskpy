@@ -7,7 +7,7 @@ from flask.views import MethodView
 from flask.ext.admin.model import BaseModelView
 from taskpy.widgets.ace import AceEditorField
 
-import taskpy.models.jobs
+import taskpy.models.tasks
 
 class TaskForm(wtf.Form):
 	'''Form for creating a new job'''
@@ -52,7 +52,7 @@ class TasksView(BaseModelView):
 	list_template = 'tasks.html'
 
 	def __init__(self, **options):
-		super(TasksView, self).__init__(taskpy.models.jobs.Task, **options)
+		super(TasksView, self).__init__(taskpy.models.tasks.Task, **options)
 
 	def scaffold_list_columns(self):
 		return ('name',)
