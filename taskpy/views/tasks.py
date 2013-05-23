@@ -80,7 +80,7 @@ class TasksView(BaseModelView):
 		return len(lst), lst
 
 	def create_model(self, form):
-		model = taskpy.models.jobs.Task(name=form.name.data, configuration=flask.g.configuration)
+		model = taskpy.models.tasks.Task(name=form.name.data, configuration=flask.g.configuration)
 		model.update_script(form.script.data)
 		flask.g.configuration.add(model)
 		flask.g.configuration.save()
