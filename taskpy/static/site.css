@@ -17,8 +17,3 @@ fieldset .controls ul {
 	list-style-type: none;
 	margin-left: 0;
 }
-
-fieldset .controls li,
-fieldset .controls li label {
-	display: inline-block;
-}

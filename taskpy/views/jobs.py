@@ -6,6 +6,8 @@ from flask.ext import admin, wtf
 from flask.ext.admin.model import BaseModelView
 
 import taskpy.models.jobs
+import taskpy.models.tasks
+from taskpy.widgets.list import ExpandableFieldList
 
 def format_status(view, context, model, field):
 	'''Format status field to have an icon'''
@@ -36,16 +38,22 @@ class JobsNewForm(wtf.Form):
 		if field.data in flask.g.configuration.jobs:
 			raise wtf.ValidationError('That name already exists')
 
+def task_name(task):
+	if isinstance(task, taskpy.models.tasks.Task):
+		return task.name
+	return task
+
 class JobEditForm(wtf.Form):
 	'''Form for editing a job'''
 	name = wtf.StringField(
 		  validators = [wtf.DataRequired(), wtf.Regexp('^[a-zA-Z0-9_\-]*$')]
 		)
-	tasks = wtf.FieldList(
+	tasks = ExpandableFieldList(
 		  wtf.SelectField(
 			  'Task'
 			, choices=[]
 			, validators=[wtf.InputRequired()]
+			, coerce=task_name
 			)
 		, min_entries=1
 		)
