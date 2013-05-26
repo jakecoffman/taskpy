@@ -15,16 +15,6 @@ def make_app():
 	# Static bootstrap files (required by flask-admin)
 	admin_app.add_view(taskpy.views.AdminStatic(url='/_'))
 
-	task = taskpy.views.Task.as_view('task')
-	app.add_url_rule('/tasks/<task>', view_func=task)
-
-	triggers = taskpy.views.Triggers.as_view('triggers')
-	app.add_url_rule('/triggers', view_func=triggers)
-	app.add_url_rule('/triggers/', view_func=triggers)
-
-	trigger = taskpy.views.Trigger.as_view('trigger')
-	app.add_url_rule('/triggers/<trigger>', view_func=trigger)
-
 	configuration = Configuration('data')
 
 	@app.before_request
