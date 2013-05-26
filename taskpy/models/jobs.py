@@ -59,13 +59,14 @@ class Run(object):
 		if not os.path.exists(self.job.folder):
 			os.makedirs(self.job.folder)
 		log_file = tempfile.NamedTemporaryFile(suffix='.log', prefix='run_', dir=self.job.folder, delete=False)
+		workspace = self.job.folder
 		self.log_filename = log_file.name
 		self.start_time = datetime.datetime.utcnow()
 		self.state = 'running'
 		status = True
 		for task in self.job.tasks:
 			log_file.write('Starting task "{0}" at {1}\n'.format(task.name, datetime.datetime.utcnow().isoformat()))
-			status = task.run(log_file)
+			status = task.run(log_file, workspace)
 			if not status:
 				break
 		self.state = ('failed', 'success')[status]
