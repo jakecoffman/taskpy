@@ -1,4 +1,5 @@
 import subprocess
+import stat
 import os
 
 class Task(object):
@@ -12,21 +13,18 @@ class Task(object):
 		if not os.path.exists(os.path.dirname(self.script_path)):
 			os.makedirs(os.path.dirname(self.script_path))
 		with open(self.script_path, 'w') as fle:
-			fle.write(script)
-		os.chmod(self.script_path, 755)
+			# Write to file, but use native line sep!
+			for line in script.split('\n'):
+				fle.write(line.rstrip())
+				fle.write(os.linesep)
+		os.chmod(self.script_path, stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
 	@property
 	def script(self):
-		print 'aaaee'
 		if self.script_path and os.path.exists(self.script_path):
-			print 'cc', self.script_path
-			print 'a', open(self.script_path), 'a'
-			b = open(self.script_path, 'r')
-			print 'ddd'
+			b = open(self.script_path, 'rU')
 			a = b.read()
-			print 'xx',a,'xx'
 			return a
-		print 'bbbbbb'
 		return None
 
 	def as_json(self):
