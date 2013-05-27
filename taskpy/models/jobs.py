@@ -85,6 +85,6 @@ class Run(object):
 	@property
 	def output(self):
 		if not os.path.exists(self.log_filename):
-			return ''
+			return None
 		return open(self.log_filename).read()
 
