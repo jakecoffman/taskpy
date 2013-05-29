@@ -176,6 +176,4 @@ class JobsView(BaseModelView):
 			return flask.redirect(flask.url_for('.job_view', id=id))
 		run = job.runs[int(run_id)]
 		here = flask.url_for('.run_view', id=id, run_id=run_id)
-		if not run.output:
-			flask.flash('Could not find log file for run', category='warning')
 		return self.render('run.html', run=run, job=job, return_url=here)

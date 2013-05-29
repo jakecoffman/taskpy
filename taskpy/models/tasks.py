@@ -22,13 +22,13 @@ class Task(object):
 	@property
 	def script(self):
 		if self.script_path and os.path.exists(self.script_path):
-			b = open(self.script_path, 'rU')
-			a = b.read()
-			return a
+			return open(self.script_path, 'rU').read()
 		return None
 
 	def as_json(self):
-		return dict()
+		return  { 'name': self.name
+				, 'script_path': self.script_path
+				}
 
 	def run(self, log_file, workspace):
 		process = subprocess.Popen([os.path.abspath(self.script_path)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=os.path.abspath(workspace))

@@ -29,7 +29,11 @@
 </div>
 <div class="span9" id="content">
 	<h2>{{job.name}} - Run #{{run.start_time.isoformat()}}</h2>
-	<h3>Output</h3>
-	<pre>{{run.output}}</pre>
+	{% for task in run.tasks %}
+		<h3>Output: {{ task.name }}</h3>
+		<pre>{{ task.output }}
+Return code: {{ task.return_code }}
+End time: {{ task.end_time.isoformat() }}</pre>
+	{% endfor %}
 </div>
 {% endblock %}
