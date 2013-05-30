@@ -5,7 +5,7 @@ import os
 class Task(object):
 	def __init__(self, name, configuration, data={}):
 		self.name = name
-		self.script_path = os.path.join(configuration.base_dir, 'tasks', name, 'script.py')
+		self.script_path = os.path.abspath(os.path.join(configuration.base_dir, 'tasks', name, 'script.py'))
 		self.configuration = configuration
 
 	def update_script(self, script):
