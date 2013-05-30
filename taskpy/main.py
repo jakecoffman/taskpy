@@ -1,4 +1,5 @@
 import flask
+import argparse
 from flask.ext import admin
 
 import taskpy.views
@@ -7,7 +8,7 @@ from taskpy.models.configuration import Configuration
 def make_app():
 	app = flask.Flask(__name__)
 	app.secret_key = 'taskpy123'
-	
+
 	index_view = taskpy.views.JobsView(name="Jobs", endpoint="jobs", url='/')
 	admin_app = admin.Admin(app, name='Taskpy', index_view=index_view, base_template='admin_base.html')
 	admin_app.add_view(taskpy.views.TasksView(name="Tasks", endpoint="tasks"))
@@ -24,8 +25,14 @@ def make_app():
 	return app
 
 def main():
+	# Setup argument parser
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--host"
+				, required=False, default='127.0.0.1'
+				, help="Host interface to bind to")
+	args = parser.parse_args()
 	app = make_app()
-	app.run(debug=True)
+	app.run(debug=True, host=args.host)
 
 if __name__ == "__main__":
 	main()

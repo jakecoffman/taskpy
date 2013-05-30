@@ -8,13 +8,7 @@ setup(
 	, package_data = {
 		'taskpy': [ 'templates/*.html'
 				  , 'static/favicon.ico'
-				  , 'static/*.png'
-				  , 'static/*.jpg'
-				  , 'static/*.js'
-				  , 'static/*.css'
-				  , 'static/bootstrap/css/*.css'
-				  , 'static/bootstrap/js/*.js'
-				  , 'static/bootstrap/img/*.png'
+				  , 'static/site.css'
 				  ]
 		}
 	, install_requires =
@@ -26,8 +20,7 @@ setup(
 
 	 , entry_points =
 		{ 'console_scripts':
-			[ 'taskpy = taskpy.task:main'
-			, 'taskpy-clear = taskpy.clear:main'
+			[ 'taskpy = taskpy.main:main'
 			]
 		}
 	)
