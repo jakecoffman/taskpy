@@ -21,9 +21,9 @@
 		</li>
 	<li class="nav-header">Runs</li>
 	<ul id="runs">
-	{% for run in job.runs -%}
-		<li><a href="{{ url_for('.run_view', id=job.name, run_id=loop.index0) }}">
-		#{{loop.index0}} - {{ run.start_time.strftime('%m/%d %H:%M:%S') }}
+	{% for run in job.runs|reverse -%}
+		<li><a href="{{ url_for('.run_view', id=job.name, run_id=run.run_id) }}">
+		{{ run.start_time.strftime('%m/%d %H:%M:%S') }}
 		{% if run.state == "success" %}
 		<span class="label label-success">Pass</span>
 		{% elif run.state == "failed" %}

@@ -28,7 +28,7 @@
 	</li>
 </div>
 <div class="span9" id="content">
-	<h2>{{job.name}} - Run #{{run.start_time.isoformat()}}</h2>
+	<h2>{{ job.name }} - Run {{ run.run_id }}</h2>
 	{% for task in run.tasks %}
 		<h3>Output: {{ task.name }}</h3>
 		<pre class="log">{{ task.output }}

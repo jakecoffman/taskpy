@@ -1,9 +1,5 @@
 from celery import Celery
 import subprocess
-import datetime
-import tempfile
-import time
-import re
 
 from taskpy.models.run import RunResult
 
@@ -11,7 +7,7 @@ celery = Celery('taskpy-worker', broker='amqp://guest@localhost//', backend='amq
 
 @celery.task
 def run_job(config):
-	result = RunResult()
+	result = RunResult(run_id=run_job.request.id)
 	result.record_begin()
 	success = True
 	for task in config.tasks:
