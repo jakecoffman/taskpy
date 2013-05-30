@@ -16,6 +16,7 @@ setup(
 		, 'flask-admin>=1.0.6'
 		, 'iso8601'
 		, 'celery'
+		, 'flask-sqlalchemy'
 		]
 
 	 , entry_points =
