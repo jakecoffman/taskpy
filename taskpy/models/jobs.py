@@ -1,3 +1,4 @@
+import os
 import taskpy.worker
 
 from taskpy.models.run import RunConfig, RunResult
@@ -36,7 +37,7 @@ class Job(object):
 
 	def run(self):
 		cfg = RunConfig(self)
-		task = taskpy.worker.run_job.delay([task.as_json() for task in self.tasks])
+		task = taskpy.worker.run_job.delay(cfg)
 		result = task.get()
-		self.runs.append(RunResult(result))
+		self.runs.append(RunResult(data=result))
 		self.configuration.save()

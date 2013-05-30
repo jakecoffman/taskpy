@@ -10,11 +10,11 @@ from taskpy.models.run import RunResult
 celery = Celery('taskpy-worker', broker='amqp://guest@localhost//', backend='amqp')
 
 @celery.task
-def run_job(tasks):
+def run_job(config):
 	result = RunResult()
 	result.record_begin()
 	success = True
-	for task in tasks:
+	for task in config.tasks:
 		process = subprocess.Popen([task['script_path']], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		output = process.communicate()[0]
 		rcode = process.wait()
