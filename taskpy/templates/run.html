@@ -31,7 +31,7 @@
 	<h2>{{job.name}} - Run #{{run.start_time.isoformat()}}</h2>
 	{% for task in run.tasks %}
 		<h3>Output: {{ task.name }}</h3>
-		<pre>{{ task.output }}
+		<pre class="log">{{ task.output }}
 Return code: {{ task.return_code }}
 End time: {{ task.end_time.isoformat() }}</pre>
 	{% endfor %}

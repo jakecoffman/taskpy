@@ -17,3 +17,8 @@ fieldset .controls ul {
 	list-style-type: none;
 	margin-left: 0;
 }
+
+pre.log {
+	background-color: black;
+	color: white;
+}
