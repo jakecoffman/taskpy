@@ -4,8 +4,7 @@ from flask.ext import admin
 
 import taskpy.views
 from taskpy.models.configuration import Configuration
-from flask.ext.admin.contrib.sqlamodel import ModelView
-from taskpy.models import db, Task, Job
+from taskpy.models import db
 
 def make_app():
 	app = flask.Flask(__name__)
@@ -18,8 +17,6 @@ def make_app():
 	index_view = taskpy.views.JobsView(name="Jobs", endpoint="jobs", url='/')
 	admin_app = admin.Admin(app, name='Taskpy', index_view=index_view, base_template='admin_base.html')
 	admin_app.add_view(taskpy.views.TasksView(name="Tasks", endpoint="tasks"))
-	admin_app.add_view(ModelView(Task, db.session, name='Tasks', endpoint='tasks2'))
-	admin_app.add_view(ModelView(Job, db.session, name='Jobs', endpoint='jobs2'))
 
 	# Static bootstrap files (required by flask-admin)
 	admin_app.add_view(taskpy.views.AdminStatic(url='/_'))

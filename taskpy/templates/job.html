@@ -6,23 +6,23 @@
 </ul>
 <div class="span2 well" id="sidebar">
 	<li class="nav-header">Actions</li>
-		<li><a href="{{ url_for('.start_run_view', id=job.name) }}">Run job</a></li>
+		<li><a href="{{ url_for('.start_run_view', id=job.id) }}">Run job</a></li>
 		<li>
-			<form class="icon" method="POST" action="{{ url_for('.delete_view', id=job.name, url=return_url) }}">
+			<form class="icon" method="POST" action="{{ url_for('.delete_view', id=job.id, url=return_url) }}">
 				<button onclick="return confirm('You sure you want to delete this job?');">
 					<a>Delete Job</a>
 				</button>
 			</form>
 		</li>
 		<li>
-			<a class="icon" href="{{ url_for('.edit_view', id=job.name, url=return_url) }}">
+			<a class="icon" href="{{ url_for('.edit_view', id=job.id, url=return_url) }}">
 				Configure Job
 			</a>
 		</li>
 	<li class="nav-header">Runs</li>
 	<ul id="runs">
 	{% for run in job.runs|reverse -%}
-		<li><a href="{{ url_for('.run_view', id=job.name, run_id=run.run_id) }}">
+		<li><a href="{{ url_for('.run_view', id=job.id, run_id=run.run_id) }}">
 		{{ run.start_time.strftime('%m/%d %H:%M:%S') }}
 		{% if run.state == "success" %}
 		<span class="label label-success">Pass</span>
@@ -37,7 +37,7 @@
 </div>
 <div class="span9" id="content">
 	<h2>Job: {{job.name}}</h2>
-	<p><a class="btn btn-primary" href="{{ url_for('.edit_view', id=job.name, url=return_url) }}">Configure</a></p>
+	<p><a class="btn btn-primary" href="{{ url_for('.edit_view', id=job.id, url=return_url) }}">Configure</a></p>
 	<h3>Tasks</h3>
 	<ul>
 		{% for task in job.tasks -%}

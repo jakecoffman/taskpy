@@ -3,10 +3,9 @@ import flask
 import operator
 from jinja2 import Markup
 from flask.ext import admin, wtf
-from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.contrib.sqlamodel import ModelView
 
-import taskpy.models.jobs
-import taskpy.models.tasks
+import taskpy.models
 from taskpy.widgets.list import ExpandableFieldList
 
 def format_status(view, context, model, field):
@@ -21,7 +20,7 @@ def format_status(view, context, model, field):
 
 def format_name(view, context, model, field):
 	'''Format job name as a link to the view page for that id'''
-	url = flask.url_for('.job_view', id=getattr(model, field))
+	url = flask.url_for('.job_view', id=model.id)
 	return Markup('<a href="{url}">{field_value}</a>'.format(field_value=cgi.escape(getattr(model, field)), url=url))
 
 def format_count(view, context, model, field):
@@ -34,12 +33,8 @@ class JobsNewForm(wtf.Form):
 		  validators = [wtf.DataRequired(), wtf.Regexp('^[a-zA-Z0-9_\-]*$')]
 		)
 
-	def validate_name(self, field):
-		if field.data in flask.g.configuration.jobs:
-			raise wtf.ValidationError('That name already exists')
-
 def task_name(task):
-	if isinstance(task, taskpy.models.tasks.Task):
+	if isinstance(task, taskpy.models.Task):
 		return task.name
 	return task
 
@@ -65,7 +60,7 @@ class JobEditForm(wtf.Form):
 			if field.data in flask.g.configuration.jobs:
 				raise wtf.ValidationError('That name already exists')
 
-class JobsView(BaseModelView):
+class JobsView(ModelView):
 	column_formatters = dict(status=format_status, name=format_name, tasks=format_count)
 	column_labels = dict(name='Job Name')
 	column_sortable_list = ['name', 'status', 'last_run']
@@ -75,7 +70,7 @@ class JobsView(BaseModelView):
 	create_template='job_edit.html'
 
 	def __init__(self, **options):
-		super(JobsView, self).__init__(taskpy.models.jobs.Job, **options)
+		super(JobsView, self).__init__(taskpy.models.Job, taskpy.models.db.session, **options)
 
 	def get_pk_value(self, model):
 		return model.name
@@ -83,73 +78,8 @@ class JobsView(BaseModelView):
 	def scaffold_list_columns(self):
 		return ('name', 'tasks', 'status', 'last_run')
 
-	def scaffold_form(self):
-		return JobsNewForm
-
-	def edit_form(self, obj):
-		form = JobEditForm(obj=obj)
-
-		# Fill in the task choices in the select boxes
-		choices = [(x, x) for x in flask.g.configuration.tasks.keys()]
-		for selector in form.tasks.entries:
-			selector.choices = choices
-
-		return form
-
-	def get_one(self, name):
-		return flask.g.configuration.jobs.get(name)
-
-	def get_list(self, page, sort_field, sort_desc, search, filters):
-		lst = [obj for name, obj in flask.g.configuration.jobs.iteritems()]
-		# Setting default sort
-		if sort_field == None:
-			sort_field='name'
-			sort_desc=1
-
-		lst.sort(key=operator.attrgetter(sort_field), reverse=bool(sort_desc))
-		return len(lst), lst
-
-	def create_model(self, form):
-		name = form.name.data
-
-		try:
-			model = taskpy.models.jobs.Job(name=name, configuration=flask.g.configuration)
-			flask.g.configuration.add(model)
-			flask.g.configuration.save()
-			return True
-		except Exception, ex:
-			raise
-			flask.flash('Failed to create. {}: {}'.format(ex.__class__.__name__, str(ex)), category='error')
-			return False
-
-	def delete_model(self, model):
-		try:
-			flask.g.configuration.remove(model)
-			flask.g.configuration.save()
-			return True
-		except Exception, ex:
-			raise
-			flask.flash('Failed to delete. {}: {}'.format(ex.__class__.__name__, str(ex)), category='error')
-			return False
-
-	def update_model(self, form, model):
-		try:
-			# Handle renaming
-			if model.name != form.name.data:
-				flask.g.configuration.remove(model)
-				model.name = form.name.data
-				flask.flash('Renamed job to {}.'.format(model.name))
-
-			# Handle tasks
-			model.update_tasks(form.tasks.data)
-
-			flask.g.configuration.add(model)
-			flask.g.configuration.save()
-			return True
-		except Exception, ex:
-			raise
-			flask.flash('Failed to update. {}: {}'.format(ex.__class__.__name__, str(ex)), category='error')
-			return False
+	#def scaffold_form(self):
+	#	return JobsNewForm
 
 	@admin.expose('/job/<id>')
 	def job_view(self, id):
