@@ -1,3 +1,10 @@
 *.pyc
-*.idea
+taskpy.egg-info/
+
+data/
 jobs.json
+triggers.json
+
+.pydevproject
+.project
+*.idea

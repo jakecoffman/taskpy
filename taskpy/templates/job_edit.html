@@ -1,0 +1,29 @@
+{% extends 'admin/model/edit.html' %}
+{% block body %}
+<ul class="breadcrumb">
+	<li><a href="{{ url_for('.index_view') }}">Jobs</a> <span class="divider">/</span></li>
+	{% if model %}
+	<li><a href="{{ url_for('.job_view', id=model.name) }}">{{model.name}}</a> <span class="divider">/</span></li>
+	<li class="active">Configure</li>
+	{% else %}
+	<li class="active">Create</li>
+	{% endif %}
+</ul>
+{{ super() }}
+{% endblock %}
+
+{% block tail %}
+{{ super() }}
+<script>
+function new_task() {
+	var new_id = 'tasks-' + $('#tasks li').size();
+	var new_item = $('#tasks li:first').clone();
+	new_item.children('label').attr('for', new_id);
+	new_item.children('select').attr('id', new_id).attr('name', new_id);
+	$('#tasks').append(new_item);
+}
+function remove_task(el) {
+	$(el).parent().remove();
+}
+</script>
+{% endblock %}

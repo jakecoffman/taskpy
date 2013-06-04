@@ -1,0 +1,27 @@
+{% extends 'admin/model/edit.html' %}
+{% block body %}
+<ul class="breadcrumb">
+	<li><a href="{{ url_for('.index_view') }}">Tasks</a> <span class="divider">/</span></li>
+	{% if model %}
+	<li class="active">{{model.name}}</li>
+	{% else %}
+	<li class="active">Create</li>
+	{% endif %}
+</ul>
+{{ super() }}
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script src="//cdn.jsdelivr.net/ace/1.0.0/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var editor = ace.edit("script");
+	var editor_submit = document.getElementById("script_ace");
+	editor.session.setUseWorker(false);
+	editor.setTheme("ace/theme/monokai");
+	editor.getSession().setMode("ace/mode/python");
+	document.forms[0].onsubmit= function() {
+		editor_submit.value = editor.getSession().getValue();
+		return true;
+	};
+</script>
+{% endblock %}

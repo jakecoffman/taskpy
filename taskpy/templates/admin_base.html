@@ -1,0 +1,42 @@
+{% extends 'admin/base.html' %}
+{% block head_meta %}
+	{{ super() }}
+	<link rel="stylesheet" href="/static/site.css">
+	<!-- Fav and touch icons -->
+	<link rel="shortcut icon" href="/static/favicon.ico">
+{% endblock %}
+
+    {% block page_body %}
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          {% block brand %}
+          <span class="brand">{{ admin_view.admin.name }}</span>
+          {% endblock %}
+          <ul class="nav">
+            {{ layout.menu() }}
+          </ul>
+          <ul class="nav pull-right">
+            {{ layout.menu_links() }}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top: 45px;">
+      {{ layout.messages() }}
+      {% block body %}{% endblock %}
+    </div>
+    {% endblock %}
+
+{% block tail %}
+	<footer class="footer">
+	<div class="container">
+		<p>
+			<a href="http://code.google.com/p/taskpy/">
+				http://code.google.com/p/taskpy/
+			</a>
+		</p>
+	</div>
+	</footer>
+{% endblock %}
