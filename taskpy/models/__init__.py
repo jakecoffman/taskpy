@@ -15,7 +15,7 @@ class Job(db.Model):
 	@property
 	def status(self):
 		if len(self.runs) != 0:
-			return self.runs[-1].state
+			return self.runs[-1].result
 
 	def __unicode__(self):
 		return self.name
@@ -48,6 +48,13 @@ class Task(db.Model):
 	def __unicode__(self):
 		return self.name
 
+	def as_json(self):
+		return {
+			  'id': self.id
+			, 'name': self.name
+			, 'script': self.script
+			}
+
 class JobTasks(db.Model):
 	__tablename__ = 'job_tasks'
 	id = db.Column(db.Integer, primary_key=True)
@@ -58,8 +65,8 @@ class JobTasks(db.Model):
 class Run(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
-	start_time = db.Column(db.DateTime)
+	start_time = db.Column(db.DateTime, nullable=False)
 	end_time = db.Column(db.DateTime)
 	result = db.Column(db.Enum('success', 'failed'))
-	task_id = db.Column(db.String(80))
+	celery_id = db.Column(db.String(255), nullable=False)
 	log_file = db.Column(db.String(100))

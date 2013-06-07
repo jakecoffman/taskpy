@@ -1,4 +1,5 @@
 import flask
+import datetime
 from jinja2 import Markup
 from flask.ext import admin, wtf
 from flask.ext.admin.contrib.sqlamodel import ModelView
@@ -74,7 +75,13 @@ class JobsView(ModelView):
 		job = self.get_one(id)
 		if not job:
 			return flask.redirect(flask.url_for('.index_view'))
-		job.run()
+		run = taskpy.models.Run()
+		run.job_id = job.id
+		run.start_time = datetime.datetime.utcnow()
+		task = taskpy.worker.run_job.delay(taskpy.models.run.RunConfig(job))
+		run.celery_id = task.id
+		taskpy.models.db.session.add(run)
+		taskpy.models.db.session.commit()
 		return flask.redirect(flask.url_for('.job_view', id=id))
 
 	@admin.expose('/job/<id>/runs/<run_id>')
@@ -82,7 +89,7 @@ class JobsView(ModelView):
 		job = self.get_one(id)
 		if not job:
 			return flask.redirect(flask.url_for('.job_view', id=id))
-		run = job.get_run(run_id)
+		run = taskpy.models.db.session.query(taskpy.models.Run).get(run_id)
 		if not run:
 			return flask.redirect(flask.url_for('.job_view', id=id))
 		here = flask.url_for('.run_view', id=id, run_id=run_id)
