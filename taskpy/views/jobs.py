@@ -1,9 +1,9 @@
 import cgi
 import flask
-import operator
 from jinja2 import Markup
 from flask.ext import admin, wtf
 from flask.ext.admin.contrib.sqlamodel import ModelView
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 import taskpy.models
 from taskpy.widgets.list import ExpandableFieldList
@@ -27,43 +27,24 @@ def format_count(view, context, model, field):
 	'''Format the task count in a badge'''
 	return Markup('<div class="badge badge-inverse">%(field_value)s</div>') % {'field_value': len(getattr(model, field))}
 
-class JobsNewForm(wtf.Form):
-	'''Form for creating a new job'''
-	name = wtf.StringField(
-		  validators = [wtf.DataRequired(), wtf.Regexp('^[a-zA-Z0-9_\-]*$')]
-		)
-
-def task_name(task):
-	if isinstance(task, taskpy.models.Task):
-		return task.name
-	return task
-
-class JobEditForm(wtf.Form):
+class JobForm(wtf.Form):
 	'''Form for editing a job'''
 	name = wtf.StringField(
 		  validators = [wtf.DataRequired(), wtf.Regexp('^[a-zA-Z0-9_\-]*$')]
 		)
 	tasks = ExpandableFieldList(
-		  wtf.SelectField(
+		  QuerySelectField(
 			  'Task'
-			, choices=[]
+			, query_factory=lambda: taskpy.models.Task.query
 			, validators=[wtf.InputRequired()]
-			, coerce=task_name
+			, get_label=lambda x: x.name
 			)
 		, min_entries=1
 		)
 
-	def validate_name(self, field):
-		# Dont allow duplicate names
-		# Only validate when changing name!
-		if field.data != flask.request.args.get('id'):
-			if field.data in flask.g.configuration.jobs:
-				raise wtf.ValidationError('That name already exists')
-
 class JobsView(ModelView):
 	column_formatters = dict(status=format_status, name=format_name, tasks=format_count)
 	column_labels = dict(name='Job Name')
-	column_sortable_list = ['name', 'status', 'last_run']
 
 	list_template='jobs.html'
 	edit_template='job_edit.html'
@@ -78,8 +59,8 @@ class JobsView(ModelView):
 	def scaffold_list_columns(self):
 		return ('name', 'tasks', 'status', 'last_run')
 
-	#def scaffold_form(self):
-	#	return JobsNewForm
+	def scaffold_form(self):
+		return JobForm
 
 	@admin.expose('/job/<id>')
 	def job_view(self, id):
