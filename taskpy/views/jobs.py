@@ -1,4 +1,3 @@
-import cgi
 import flask
 from jinja2 import Markup
 from flask.ext import admin, wtf
@@ -21,11 +20,11 @@ def format_status(view, context, model, field):
 def format_name(view, context, model, field):
 	'''Format job name as a link to the view page for that id'''
 	url = flask.url_for('.job_view', id=model.id)
-	return Markup('<a href="{url}">{field_value}</a>'.format(field_value=cgi.escape(getattr(model, field)), url=url))
+	return Markup('<a href="{url}">%s</a>'.format(url=url)) % getattr(model, field)
 
 def format_count(view, context, model, field):
 	'''Format the task count in a badge'''
-	return Markup('<div class="badge badge-inverse">%(field_value)s</div>') % {'field_value': len(getattr(model, field))}
+	return Markup('<div class="badge badge-inverse">%s</div>') % len(getattr(model, field))
 
 class JobForm(wtf.Form):
 	'''Form for editing a job'''
