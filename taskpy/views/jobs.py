@@ -78,7 +78,8 @@ class JobsView(ModelView):
 		run = taskpy.models.Run()
 		run.job_id = job.id
 		run.start_time = datetime.datetime.utcnow()
-		task = taskpy.worker.run_job.delay(taskpy.models.run.RunConfig(job))
+		cfg = taskpy.models.run.RunConfig(job)
+		task = taskpy.worker.run_job.apply_async((cfg,), link=taskpy.worker.record_results.s())
 		run.celery_id = task.id
 		taskpy.models.db.session.add(run)
 		taskpy.models.db.session.commit()
