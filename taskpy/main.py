@@ -5,6 +5,7 @@ from flask.ext import admin
 import taskpy.views
 from taskpy.models.configuration import Configuration
 from taskpy.models import db
+from taskpy.worker import celery
 
 def make_app():
 	app = flask.Flask(__name__)
@@ -38,6 +39,11 @@ def main():
 	args = parser.parse_args()
 	app = make_app()
 	app.run(debug=True, host=args.host)
+
+def celery_main():
+	app = make_app()
+	with app.app_context():
+		celery.start()
 
 if __name__ == "__main__":
 	main()

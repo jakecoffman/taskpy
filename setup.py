@@ -22,6 +22,7 @@ setup(
 	 , entry_points =
 		{ 'console_scripts':
 			[ 'taskpy = taskpy.main:main'
+			, 'taskpy-worker = taskpy.main:celery_main'
 			]
 		}
 	)
