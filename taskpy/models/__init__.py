@@ -1,6 +1,7 @@
-import tempfile
 import os
 import stat
+import tempfile
+from flask import current_app as app
 from flask.ext.sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -33,7 +34,7 @@ class Task(db.Model):
 
 	@script.setter
 	def script(self, value):
-		self.script_path = os.path.join('data', 'tasks', self.name, 'script')
+		self.script_path = os.path.join(app.config['TASKPY_BASE'], 'tasks', self.name, 'script')
 		# Make sure folder exists first
 		if not os.path.exists(os.path.dirname(self.script_path)):
 			os.makedirs(os.path.dirname(self.script_path))

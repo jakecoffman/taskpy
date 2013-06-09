@@ -1,17 +1,18 @@
+import os
 import sys
 import flask
 import argparse
 from flask.ext import admin
 
 import taskpy.views
-from taskpy.models.configuration import Configuration
 from taskpy.models import db
 from taskpy.worker import celery
 
 def make_app():
 	app = flask.Flask(__name__)
 	app.secret_key = 'taskpy123'
-	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
+	app.config['TASKPY_BASE'] = os.path.expanduser(os.path.join('~', '.taskpy'))
+	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % os.path.join(app.config['TASKPY_BASE'], 'main.db')
 	db.init_app(app)
 	db.app = app
 	db.create_all()
@@ -22,12 +23,6 @@ def make_app():
 
 	# Static bootstrap files (required by flask-admin)
 	admin_app.add_view(taskpy.views.AdminStatic(url='/_'))
-
-	configuration = Configuration('data')
-
-	@app.before_request
-	def before_request():
-		flask.g.configuration = configuration
 
 	return app
 
