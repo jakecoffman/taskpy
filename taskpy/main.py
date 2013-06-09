@@ -1,3 +1,4 @@
+import sys
 import flask
 import argparse
 from flask.ext import admin
@@ -42,8 +43,10 @@ def main():
 
 def celery_main():
 	app = make_app()
+	argv = sys.argv
+	argv.insert(1, 'worker')
 	with app.app_context():
-		celery.start()
+		celery.start(argv)
 
 if __name__ == "__main__":
 	main()
