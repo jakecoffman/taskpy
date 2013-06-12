@@ -16,11 +16,13 @@ setup(
 		, 'flask-admin>=1.0.6'
 		, 'iso8601'
 		, 'celery'
+		, 'flask-sqlalchemy'
 		]
 
 	 , entry_points =
 		{ 'console_scripts':
 			[ 'taskpy = taskpy.main:main'
+			, 'taskpy-worker = taskpy.main:celery_main'
 			]
 		}
 	)

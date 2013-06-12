@@ -12,14 +12,14 @@ class RunConfig(object):
 		self.tasks = [task.as_json() for task in job.tasks]
 
 class RunResult(object):
-	def __init__(self, data={}, run_id=None):
+	def __init__(self, data={}, celery_id=None):
 		self.state = data.get('state')
 		self.start_time = load_time(data, 'start_time')
 		self.end_time = load_time(data, 'end_time')
-		self.run_id = data.get('run_id', run_id)
-		# If data['run_id'] was None, use the param.
-		if self.run_id == None:
-			self.run_id = run_id
+		self.celery_id = data.get('celery_id', celery_id)
+		# If data['celery_id'] was None, use the param.
+		if self.celery_id == None:
+			self.celery_id = celery_id
 		self.tasks = []
 		for task in data.get('tasks', []):
 			task['end_time'] = load_time(task, 'end_time')
@@ -27,9 +27,9 @@ class RunResult(object):
 	def record_begin(self):
 		self.start_time = datetime.datetime.utcnow()
 		self.state = 'running'
-	def record_task(self, task_name, output, return_code):
+	def record_task(self, task_id, output, return_code):
 		self.tasks.append({
-			  'name': task_name
+			  'task_id': task_id
 			, 'output': output
 			, 'return_code': return_code
 			, 'end_time': datetime.datetime.utcnow()
@@ -47,6 +47,6 @@ class RunResult(object):
 			  'state': self.state
 			, 'start_time': self.start_time.isoformat()
 			, 'end_time': self.end_time.isoformat()
-			, 'run_id': self.run_id
+			, 'celery_id': self.celery_id
 			, 'tasks': tasks
 			}
