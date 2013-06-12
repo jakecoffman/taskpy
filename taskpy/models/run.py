@@ -27,9 +27,9 @@ class RunResult(object):
 	def record_begin(self):
 		self.start_time = datetime.datetime.utcnow()
 		self.state = 'running'
-	def record_task(self, task_name, output, return_code):
+	def record_task(self, task_id, output, return_code):
 		self.tasks.append({
-			  'name': task_name
+			  'task_id': task_id
 			, 'output': output
 			, 'return_code': return_code
 			, 'end_time': datetime.datetime.utcnow()

@@ -2,7 +2,7 @@
 {% block body %}
 <ul class="breadcrumb">
 	<li><a href="{{ url_for('.index_view') }}">Jobs</a> <span class="divider">/</span></li>
-	<li><a href="{{ url_for('.job_view', id=job.name) }}">{{job.name}}</a> <span class="divider">/</span></li>
+	<li><a href="{{ url_for('.job_view', id=job.id) }}">{{job.name}}</a> <span class="divider">/</span></li>
 	<li class="active">Run</li>
 </ul>
 <div class="span2 well" id="sidebar">
@@ -29,11 +29,11 @@
 </div>
 <div class="span9" id="content">
 	<h2>{{ job.name }} - Run {{ run.celery_id }}</h2>
-	{% for task in run.tasks %}
-		<h3>Output: {{ task.name }}</h3>
-		<pre class="log">{{ task.output }}
-Return code: {{ task.return_code }}
-End time: {{ task.end_time.isoformat() }}</pre>
+	{% for task_result in run.tasks %}
+		<h3>Output: {{ task_result.task.name }}</h3>
+		<pre class="log">{{ task_result.output }}
+Return code: {{ task_result.return_code }}
+End time: {{ task_result.end_time.isoformat() }}</pre>
 	{% endfor %}
 </div>
 {% endblock %}

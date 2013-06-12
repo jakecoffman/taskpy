@@ -65,9 +65,29 @@ class JobTasks(db.Model):
 
 class Run(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
+	job_id = db.Column(db.Integer, db.ForeignKey('job.id'))
 	start_time = db.Column(db.DateTime, nullable=False)
 	end_time = db.Column(db.DateTime)
 	result = db.Column(db.Enum('success', 'failed'))
 	celery_id = db.Column(db.String(255), nullable=False)
-	log_file = db.Column(db.String(100))
+
+	tasks = db.relationship('TaskResult')
+
+class TaskResult(db.Model):
+	__tablename__ = 'task_result'
+	id = db.Column(db.Integer, primary_key=True)
+	run_id = db.Column(db.Integer, db.ForeignKey('run.id'), nullable=False)
+	parent_id = db.Column(db.Integer, db.ForeignKey('task_result.id'))
+	task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
+	log_file = db.Column(db.String(255))
+	return_code = db.Column(db.Integer)
+	start_time = db.Column(db.DateTime, nullable=False)
+	end_time = db.Column(db.DateTime)
+
+	task = db.relationship('Task')
+
+	@property
+	def output(self):
+		if self.log_file and os.path.exists(self.log_file):
+			return open(self.log_file, 'rU').read()
+		return None
