@@ -14,3 +14,20 @@ Taskpy is currently in early development, but planned features are:
 * Executing a job produces a run page which can be modified by the tasks
 
 Here's a demo: http://youtu.be/LmBeipoZ5WU
+
+
+Installation
+------------
+For development and testing, the best way to install Taskpy is in a virtualenv.
+```
+git clone https://github.com/jakecoffman/taskpy.git
+cd taskpy
+mkvirtualenv taskpy
+pip install -e .
+```
+
+Running
+-------
+Taskpy currently has two components: the webserver, and the worker.
+To run the webserver, run `taskpy`.
+To run the worker process, run `taskpy-worker`.
